@@ -41,14 +41,7 @@ The plugin follows nested workflows and effective Docker requirements/hints. It 
 
 Publish or attach the generated files using your existing ORAS pipeline. This plugin does not push, retrieve OCI referrers, sign artifacts, or attach SBOMs. The lock file connects each image SBOM to its container identity even when the bundle is attached to a workflow artifact.
 
-After provisioning the appropriate Trivy databases in an offline environment, scan each `images/*.cdx.json` separately:
-
-```sh
-trivy sbom --skip-db-update --skip-java-db-update --offline-scan \
-  --format json --output vulnerabilities.json image.cdx.json
-```
-
-Apply your pinned Trivy version's network settings as described in its [offline documentation](https://trivy.dev/docs/latest/guide/advanced/air-gap/). `--offline-scan` alone does not disable database updates. The plugin generates inventories, not vulnerability verdicts.
+See the [offline Trivy scanning guide](offline-scanning.md) for database preparation and transfer, per-image vulnerability reports, separate license assessment, and CI exit-code handling. Scanning and policy enforcement run downstream of this plugin.
 
 ## Scope and reproducibility
 

@@ -7,3 +7,5 @@ The Trivy adapter runs a local executable using argument arrays, without a shell
 The plugin writes a new output directory exclusively and removes it on generation failure. Image SBOMs are preserved byte-for-byte. Workflow inventory edges connect the root to tool invocations and their containers; image documents remain separate with checksums. The inventory deliberately declares incomplete composition because static CWL analysis and package inspection cannot prove complete runtime coverage.
 
 Generation may access registries and Trivy auxiliary data sources. Offline vulnerability scanning is a downstream operation with its own database lifecycle. OCI publication, attachment, signature policy, and retrieval belong to ORAS and the surrounding pipeline.
+
+See the [offline assessment guide](../how-to/offline-scanning.md) for the separate database preparation, transport, vulnerability scanning, and license evaluation stages.
