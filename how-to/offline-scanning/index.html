@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://Transpiler-Mate.github.io/cwl2sbom/how-to/offline-scanning/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Offline Trivy scanning - CWL 2 SBOM</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Offline Trivy scanning";
+        var mkdocs_page_input_path = "how-to/offline-scanning.md";
+        var mkdocs_page_url = "/cwl2sbom/how-to/offline-scanning/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> CWL 2 SBOM
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/first-steps/">First steps</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">Install</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../use-cli/">Use the CLI</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Offline Trivy scanning</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-prepare-the-scanner-and-database-on-a-connected-machine">1. Prepare the scanner and database on a connected machine</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-restore-and-identify-the-inputs-offline">2. Restore and identify the inputs offline</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-generate-vulnerability-reports">3. Generate vulnerability reports</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-evaluate-recorded-licenses-separately">4. Evaluate recorded licenses separately</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-keep-the-assessment-reproducible">5. Keep the assessment reproducible</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/api/">API</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/architecture/">Architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">CWL 2 SBOM</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">How-to guides</li>
+      <li class="breadcrumb-item active">Offline Trivy scanning</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Transpiler-Mate/cwl2sbom/edit/main/docs/how-to/offline-scanning.md">Edit on cwl2sbom</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="scan-exported-sboms-offline-with-trivy">Scan exported SBOMs offline with Trivy<a class="headerlink" href="#scan-exported-sboms-offline-with-trivy" title="Permanent link">&para;</a></h1>
+<p>SBOM generation, artifact transport, and assessment are separate operations:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Tool</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Generate</td>
+<td><code>transpiler-mate cwl2sbom</code> with Trivy</td>
+<td>Inspect declared container images and write local SBOMs and identity metadata</td>
+</tr>
+<tr>
+<td>Publish and retrieve</td>
+<td>Your ORAS pipeline</td>
+<td>Attach, distribute, and retrieve artifacts under your registry and trust policies</td>
+</tr>
+<tr>
+<td>Assess</td>
+<td><code>trivy sbom</code></td>
+<td>Evaluate local SBOMs against a provisioned vulnerability database or license policy</td>
+</tr>
+</tbody>
+</table>
+<p>The commands below run outside the plugin. They use Trivy 0.74.0 flags; pin the scanner version in both preparation and offline environments and check <code>trivy sbom --help</code> when upgrading.</p>
+<h2 id="1-prepare-the-scanner-and-database-on-a-connected-machine">1. Prepare the scanner and database on a connected machine<a class="headerlink" href="#1-prepare-the-scanner-and-database-on-a-connected-machine" title="Permanent link">&para;</a></h2>
+<p>Use a dedicated cache so the transferable database is independent of image-generation caches:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>trivy-offline-cache
+trivy<span class="w"> </span>image<span class="w"> </span>--cache-dir<span class="w"> </span>./trivy-offline-cache<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--disable-telemetry<span class="w"> </span>--skip-version-check<span class="w"> </span>--download-db-only
+trivy<span class="w"> </span>--cache-dir<span class="w"> </span>./trivy-offline-cache<span class="w"> </span>version<span class="w"> </span>--format<span class="w"> </span>json<span class="w"> </span>&gt;<span class="w"> </span>trivy-version.json
+</code></pre></div>
+<p>If your scanner workflow needs the Java identification database, also provision it before transfer:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>image<span class="w"> </span>--cache-dir<span class="w"> </span>./trivy-offline-cache<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--disable-telemetry<span class="w"> </span>--skip-version-check<span class="w"> </span>--download-java-db-only
+</code></pre></div>
+<p>Preserve the cache layout, including <code>db/trivy.db</code> and <code>db/metadata.json</code> (and <code>java-db/</code> when provisioned). Bundle it with the version record:</p>
+<div class="highlight"><pre><span></span><code>tar<span class="w"> </span>-czf<span class="w"> </span>trivy-offline-db.tar.gz<span class="w"> </span>trivy-offline-cache<span class="w"> </span>trivy-version.json
+sha256sum<span class="w"> </span>trivy-offline-db.tar.gz<span class="w"> </span>&gt;<span class="w"> </span>trivy-offline-db.tar.gz.sha256
+</code></pre></div>
+<p>Transfer this archive, the matching Trivy executable, and the generated SBOM bundle using your established transport process. ORAS publication and retrieval remain outside <code>cwl2sbom</code>. No container images are needed at assessment time.</p>
+<p>Trivy documents its external data requirements in <a href="https://trivy.dev/docs/latest/guide/advanced/air-gap/">Connectivity and network considerations</a>. Refresh the database on the connected side whenever you want to assess unchanged SBOMs against newer vulnerability information.</p>
+<h2 id="2-restore-and-identify-the-inputs-offline">2. Restore and identify the inputs offline<a class="headerlink" href="#2-restore-and-identify-the-inputs-offline" title="Permanent link">&para;</a></h2>
+<p>In a dedicated assessment directory, verify and unpack your transferred archive:</p>
+<div class="highlight"><pre><span></span><code>sha256sum<span class="w"> </span>-c<span class="w"> </span>trivy-offline-db.tar.gz.sha256
+tar<span class="w"> </span>-xzf<span class="w"> </span>trivy-offline-db.tar.gz
+</code></pre></div>
+<p>Place the retrieved plugin bundle at <code>./sbom</code>. Retain <code>images.lock.json</code> and <code>coverage.json</code>; use the lock's <code>sbom_sha256</code> values to verify each image SBOM and its recorded image/platform association. Apply your pipeline's artifact authenticity checks separately: a checksum detects changes but does not identify a trusted publisher.</p>
+<p>Scan <strong><code>sbom/images/*.cdx.json</code></strong>, not just <code>workflow.cdx.json</code>. The workflow inventory links tools and containers; its referenced image SBOMs contain the package inventories. Trivy does not turn those references into a recursive bundle scan.</p>
+<h2 id="3-generate-vulnerability-reports">3. Generate vulnerability reports<a class="headerlink" href="#3-generate-vulnerability-reports" title="Permanent link">&para;</a></h2>
+<p>Create an explicit empty configuration to avoid loading an unrelated <code>trivy.yaml</code> from the working directory. Use a controlled environment without inherited <code>TRIVY_*</code> overrides (such as a remote server, SBOM source, or VEX source).</p>
+<div class="highlight"><pre><span></span><code><span class="nb">printf</span><span class="w"> </span><span class="s1">'{}\n'</span><span class="w"> </span>&gt;<span class="w"> </span>trivy-offline.yaml
+mkdir<span class="w"> </span>-p<span class="w"> </span>reports
+trivy<span class="w"> </span>sbom<span class="w"> </span>--config<span class="w"> </span>./trivy-offline.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cache-dir<span class="w"> </span>./trivy-offline-cache<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--scanners<span class="w"> </span>vuln<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--skip-db-update<span class="w"> </span>--skip-java-db-update<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--offline-scan<span class="w"> </span>--skip-version-check<span class="w"> </span>--disable-telemetry<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--format<span class="w"> </span>json<span class="w"> </span>--output<span class="w"> </span>reports/vulnerabilities.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>sbom/images/IMAGE.cdx.json
+</code></pre></div>
+<p>Replace <code>IMAGE.cdx.json</code> with a filename from <code>images.lock.json</code>. <code>--offline-scan</code> disables remote dependency identification; database updates, version checks, and telemetry have separate controls. Do not enable remote SBOM discovery, VEX sources, or client/server scanning for this local procedure. Enforce denied network egress in the assessment environment when strict offline operation is required.</p>
+<p>For all image SBOMs, this Bash example retains separate reports and stops on scanner errors:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">set</span><span class="w"> </span>-euo<span class="w"> </span>pipefail
+<span class="nb">shopt</span><span class="w"> </span>-s<span class="w"> </span>nullglob
+<span class="nv">sbom_files</span><span class="o">=(</span>sbom/images/*.cdx.json<span class="o">)</span>
+<span class="k">if</span><span class="w"> </span><span class="o">((</span><span class="si">${#</span><span class="nv">sbom_files</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="o">))</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s1">'No image SBOMs found; review coverage.json'</span><span class="w"> </span>&gt;<span class="p">&amp;</span><span class="m">2</span>
+<span class="w">  </span><span class="nb">exit</span><span class="w"> </span><span class="m">2</span>
+<span class="k">fi</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>reports
+<span class="k">for</span><span class="w"> </span>sbom_file<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">sbom_files</span><span class="p">[@]</span><span class="si">}</span><span class="s2">"</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span><span class="nv">report_name</span><span class="o">=</span><span class="k">$(</span>basename<span class="w"> </span><span class="s2">"</span><span class="nv">$sbom_file</span><span class="s2">"</span><span class="w"> </span>.cdx.json<span class="k">)</span>
+<span class="w">  </span>trivy<span class="w"> </span>sbom<span class="w"> </span>--config<span class="w"> </span>./trivy-offline.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--cache-dir<span class="w"> </span>./trivy-offline-cache<span class="w"> </span>--scanners<span class="w"> </span>vuln<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--skip-db-update<span class="w"> </span>--skip-java-db-update<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--offline-scan<span class="w"> </span>--skip-version-check<span class="w"> </span>--disable-telemetry<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--format<span class="w"> </span>json<span class="w"> </span>--output<span class="w"> </span><span class="s2">"reports/</span><span class="si">${</span><span class="nv">report_name</span><span class="si">}</span><span class="s2">.vulnerabilities.json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">"</span><span class="nv">$sbom_file</span><span class="s2">"</span>
+<span class="k">done</span>
+</code></pre></div>
+<p>These reporting commands use Trivy's default findings exit code of zero. For a separate CI gate, add <code>--severity HIGH,CRITICAL --exit-code 1</code>. That filters the report as well as controlling the findings exit status; keep an unfiltered report when you need the complete assessment. A nonzero status can also mean a scanner failure: retain logs and do not interpret every failure as a vulnerability finding. See the <a href="https://trivy.dev/docs/latest/references/configuration/cli/trivy_sbom/">Trivy SBOM CLI reference</a>.</p>
+<h2 id="4-evaluate-recorded-licenses-separately">4. Evaluate recorded licenses separately<a class="headerlink" href="#4-evaluate-recorded-licenses-separately" title="Permanent link">&para;</a></h2>
+<p>The plugin preserves licenses detected during image inventory generation. It does not apply a license acceptance policy. Trivy can classify licenses already present in a local SBOM without a vulnerability database:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>sbom<span class="w"> </span>--config<span class="w"> </span>./trivy-offline.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--cache-dir<span class="w"> </span>./trivy-offline-cache<span class="w"> </span>--scanners<span class="w"> </span>license<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--skip-db-update<span class="w"> </span>--skip-java-db-update<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--offline-scan<span class="w"> </span>--skip-version-check<span class="w"> </span>--disable-telemetry<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--format<span class="w"> </span>json<span class="w"> </span>--output<span class="w"> </span>reports/licenses.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>sbom/images/IMAGE.cdx.json
+</code></pre></div>
+<p>Repeat for each image, using distinct output filenames as in the vulnerability loop. Use your organization's license classification configuration and acceptance criteria for a downstream gate; Trivy's default classifications are not a project-specific compatibility assessment.</p>
+<p>Missing license information remains missing. Full license detection (<code>--license-full</code>) requires access to image or filesystem contents and is <strong>not supported for SBOM targets</strong>. <code>cwl2sbom</code> currently does not expose that generation option. Offline SBOM scanning cannot recover license texts that were not captured during generation. See <a href="https://trivy.dev/docs/latest/guide/scanner/license/">Trivy license scanning</a>.</p>
+<h2 id="5-keep-the-assessment-reproducible">5. Keep the assessment reproducible<a class="headerlink" href="#5-keep-the-assessment-reproducible" title="Permanent link">&para;</a></h2>
+<p>Retain the SBOM checksums and lock file, scanner version, database metadata and archive checksum, policy/configuration and ignore files, scan time, logs, and reports. Database age affects what vulnerabilities can be found; a successful scan does not mean the database is current. A missing or incompatible database is a preparation error, not a clean scan.</p>
+<p>Review <code>coverage.json</code> alongside the reports. Complete declared-container coverage does not include runtime downloads, host tools, or packages the generator did not detect. Refreshing a database can find newly disclosed vulnerabilities in existing package inventories; improving package or license detection requires regenerating the SBOMs.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../use-cli/" class="btn btn-neutral float-left" title="Use the CLI"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../reference/" class="btn btn-neutral float-right" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Transpiler-Mate/cwl2sbom" class="fa fa-code-fork" style="color: #fcfcfc"> cwl2sbom</a>
+        </span>
+    
+    
+      <span><a href="../use-cli/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../reference/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
