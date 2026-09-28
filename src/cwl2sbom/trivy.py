@@ -1,4 +1,4 @@
-# Copyright 2026 Transpiler-Mate
+# Copyright 2026 Terradue
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,9 +47,7 @@ class Trivy:
                 "Trivy executable not found; install Trivy or set --trivy"
             ) from exc
         except subprocess.TimeoutExpired as exc:
-            raise PluginFailureError(
-                f"Trivy exceeded the {self.timeout}s timeout"
-            ) from exc
+            raise PluginFailureError(f"Trivy exceeded the {self.timeout}s timeout") from exc
         if result.returncode:
             # Registry diagnostics can contain authentication information; do not echo them.
             raise PluginFailureError(
@@ -97,9 +95,7 @@ class Trivy:
         )
         if not digests:
             raise PluginFailureError(f"Trivy SBOM has no repository digest for {image}")
-        image_ids = [
-            p["value"] for p in props if p.get("name") == "aquasecurity:trivy:ImageID"
-        ]
+        image_ids = [p["value"] for p in props if p.get("name") == "aquasecurity:trivy:ImageID"]
         return {
             "repository_digests": digests,
             "image_ids": image_ids,

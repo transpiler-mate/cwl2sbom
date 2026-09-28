@@ -1,5 +1,10 @@
 # CWL 2 SBOM
 
+[![PyPI - Version](https://img.shields.io/pypi/v/cwl2sbom.svg)](https://pypi.org/project/cwl2sbom)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cwl2sbom.svg)](https://pypi.org/project/cwl2sbom)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/transpiler-mate/cwl2sbom/package.yaml?branch=develop&event=push&label=build&logo=githubactions)](https://github.com/transpiler-mate/cwl2sbom/actions/workflows/package.yaml?query=branch%3Adevelop)
+[![Code coverage](https://img.shields.io/codecov/c/github/transpiler-mate/cwl2sbom/develop?logo=codecov)](https://app.codecov.io/gh/transpiler-mate/cwl2sbom/tree/develop)
+
 Generate local CycloneDX SBOMs for the containers declared by a CWL workflow using Trivy. Bootstrapped from the [Transpiler-Mate plugin project template](https://github.com/transpiler-mate/transpiler-mate-plugin-project-template).
 
 ## Install
@@ -77,3 +82,7 @@ mkdocs build --strict
 Verified with Trivy 0.74.0 against `alpine:3.21` on `linux/amd64`.
 
 Tests use controlled scanner responses and require no registry access. Real Trivy scanning is a separate integration check. See [architecture](docs/explanation/architecture.md).
+
+## License
+
+[![Apache License, Version 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](https://www.apache.org/licenses/LICENSE-2.0)

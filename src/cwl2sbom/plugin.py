@@ -1,4 +1,4 @@
-# Copyright 2026 Transpiler-Mate
+# Copyright 2026 Terradue
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,20 +42,14 @@ if TYPE_CHECKING:
 
 class CWL2SBOMOptions(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    output: Path = Field(
-        default=Path("sbom"), description="New output directory (must not exist)"
-    )
+    output: Path = Field(default=Path("sbom"), description="New output directory (must not exist)")
     platform: str = Field(
         pattern=r"^[a-z0-9]+/[a-z0-9_]+(?:/[a-z0-9_.-]+)?$",
         description="Explicit OCI platform, e.g. linux/amd64",
     )
-    trivy: str = Field(
-        default="trivy", min_length=1, description="Installed Trivy executable"
-    )
+    trivy: str = Field(default="trivy", min_length=1, description="Installed Trivy executable")
     cache_dir: Path | None = Field(default=None, description="Trivy cache directory")
-    timeout: int = Field(
-        default=600, gt=0, description="Timeout in seconds per Trivy invocation"
-    )
+    timeout: int = Field(default=600, gt=0, description="Timeout in seconds per Trivy invocation")
     allow_incomplete: bool = Field(
         default=False,
         description="Allow tools without inspectable dockerPull references",
@@ -63,9 +57,7 @@ class CWL2SBOMOptions(BaseModel):
 
 
 def write_json(path: Path, value: Any) -> None:
-    path.write_text(
-        json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def inventory(
@@ -95,30 +87,26 @@ def inventory(
         dependencies.append(
             {
                 "ref": ref,
-                "dependsOn": [image_refs[record["image"]]]
-                if record.get("image")
-                else [],
+                "dependsOn": [image_refs[record["image"]]] if record.get("image") else [],
             }
         )
-    for image in images:
-        components.append(
-            {
-                "type": "container",
-                "bom-ref": image["bom_ref"],
-                "name": image["reference"],
-                "version": image["repository_digests"][0].split("@", 1)[1],
-                "properties": [
-                    {"name": "transpiler-mate:platform", "value": image["platform"]}
-                ],
-                "externalReferences": [
-                    {
-                        "type": "bom",
-                        "url": image["sbom"],
-                        "hashes": [{"alg": "SHA-256", "content": image["sbom_sha256"]}],
-                    }
-                ],
-            }
-        )
+    components.extend(
+        {
+            "type": "container",
+            "bom-ref": image["bom_ref"],
+            "name": image["reference"],
+            "version": image["repository_digests"][0].split("@", 1)[1],
+            "properties": [{"name": "transpiler-mate:platform", "value": image["platform"]}],
+            "externalReferences": [
+                {
+                    "type": "bom",
+                    "url": image["sbom"],
+                    "hashes": [{"alg": "SHA-256", "content": image["sbom_sha256"]}],
+                }
+            ],
+        }
+        for image in images
+    )
     dependencies.insert(0, {"ref": root, "dependsOn": tool_refs})
     return {
         "bomFormat": "CycloneDX",
@@ -192,9 +180,7 @@ def generate(
             "tools": records,
         },
     )
-    write_json(
-        options.output / "workflow.cdx.json", inventory(context, records, images)
-    )
+    write_json(options.output / "workflow.cdx.json", inventory(context, records, images))
 
 
 @transpiler_plugin(
@@ -207,8 +193,7 @@ def cwl2sbom(context: TranspilerContext, options: CWL2SBOMOptions) -> None:
     try:
         root = save(context.resolved_process, relative_uris=False)
         processes = {
-            p["id"]: p
-            for p in save(list(context.processes), relative_uris=False)["$graph"]
+            p["id"]: p for p in save(list(context.processes), relative_uris=False)["$graph"]
         }
         records = discover(root, processes)
         gaps = [r for r in records if r["status"] == "uncovered"]

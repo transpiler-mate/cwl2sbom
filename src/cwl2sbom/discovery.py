@@ -1,4 +1,4 @@
-# Copyright 2026 Transpiler-Mate
+# Copyright 2026 Terradue
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,9 +28,7 @@ def docker(node: dict[str, Any], field: str) -> dict[str, Any] | None:
         value = entries.get("DockerRequirement")
         return dict(value or {}) if "DockerRequirement" in entries else None
     matches = [
-        r
-        for r in entries
-        if str(r.get("class", "")).rsplit("#", 1)[-1] == "DockerRequirement"
+        r for r in entries if str(r.get("class", "")).rsplit("#", 1)[-1] == "DockerRequirement"
     ]
     if len(matches) > 1:
         raise PluginFailureError("Duplicate DockerRequirement declaration")
@@ -53,9 +51,7 @@ def image_reference(
     return image, None
 
 
-def discover(
-    root: dict[str, Any], processes: dict[str, dict[str, Any]]
-) -> list[dict[str, Any]]:
+def discover(root: dict[str, Any], processes: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
     """Return one coverage entry per reachable tool invocation, with inheritance."""
     records: list[dict[str, Any]] = []
 

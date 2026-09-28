@@ -1,4 +1,4 @@
-# Copyright 2026 Transpiler-Mate
+# Copyright 2026 Terradue
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -58,7 +58,6 @@ def test_nested_inheritance_and_reused_tool() -> None:
     }
     records = discover(root, {"tool": shared, "child": child, "unused": tool("unused")})
     assert [r["image"] for r in records] == ["base:1", "other:2"]
-    assert len(records) == 2
 
 
 def test_requirement_beats_hint_and_child_overrides() -> None:
@@ -90,10 +89,7 @@ def test_coverage_gaps(requirement: list[dict[str, str]]) -> None:
 
 
 def test_expression_tool() -> None:
-    assert (
-        discover({"id": "expr", "class": "ExpressionTool"}, {})[0]["status"]
-        == "not-applicable"
-    )
+    assert discover({"id": "expr", "class": "ExpressionTool"}, {})[0]["status"] == "not-applicable"
 
 
 def test_cycle_and_missing_run() -> None:
@@ -109,8 +105,7 @@ def source(tmp_path: Path) -> Path:
     text = (Path(__file__).parent / "fixtures/hello.cwl").read_text()
     path = tmp_path / "hello.cwl"
     path.write_text(
-        text
-        + "\nrequirements:\n  DockerRequirement:\n    dockerPull: example.org/tool:1\n"
+        text + "\nrequirements:\n  DockerRequirement:\n    dockerPull: example.org/tool:1\n"
     )
     return path
 
@@ -149,7 +144,12 @@ def scanner(monkeypatch: pytest.MonkeyPatch) -> Mock:
         return ""
 
     mock = Mock(side_effect=run)
-    monkeypatch.setattr(Trivy, "run", lambda self, args: mock(self, args))
+
+    def mock_run(self: Trivy, args: list[str]) -> str:
+        result: str = mock(self, args)
+        return result
+
+    monkeypatch.setattr(Trivy, "run", mock_run)
     return mock
 
 
@@ -186,9 +186,7 @@ def test_existing_output_preserved(source: Path, tmp_path: Path) -> None:
     (output / "keep").write_text("keep")
     context = DefaultTranspilerContextResolver().resolve(f"{source}#hello")
     with pytest.raises(PluginError):
-        cwl2sbom.execute(
-            context, CWL2SBOMOptions(platform="linux/amd64", output=output)
-        )
+        cwl2sbom.execute(context, CWL2SBOMOptions(platform="linux/amd64", output=output))
     assert (output / "keep").read_text() == "keep"
 
 
@@ -198,9 +196,7 @@ def test_missing_binary_cleans_output(source: Path, tmp_path: Path) -> None:
     with pytest.raises(PluginError, match="executable not found"):
         cwl2sbom.execute(
             context,
-            CWL2SBOMOptions(
-                platform="linux/amd64", output=output, trivy="/nonexistent/trivy"
-            ),
+            CWL2SBOMOptions(platform="linux/amd64", output=output, trivy="/nonexistent/trivy"),
         )
     assert not output.exists()
 
@@ -211,9 +207,7 @@ def test_incomplete_export_without_trivy(tmp_path: Path) -> None:
     )
     output = tmp_path / "bundle"
     with pytest.raises(PluginError, match="coverage incomplete"):
-        cwl2sbom.execute(
-            context, CWL2SBOMOptions(platform="linux/amd64", output=output)
-        )
+        cwl2sbom.execute(context, CWL2SBOMOptions(platform="linux/amd64", output=output))
     assert not output.exists()
     cwl2sbom.execute(
         context,
@@ -249,9 +243,7 @@ def test_scan_failure_rolls_back(
     monkeypatch.setattr(Trivy, "generate", fail)
     output = tmp_path / "bundle"
     with pytest.raises(PluginError, match="scanner failed"):
-        cwl2sbom.execute(
-            context, CWL2SBOMOptions(platform="linux/amd64", output=output)
-        )
+        cwl2sbom.execute(context, CWL2SBOMOptions(platform="linux/amd64", output=output))
     assert not output.exists()
 
 
