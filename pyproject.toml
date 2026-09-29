@@ -52,7 +52,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-  "click>=8,<9",
+  "click>=8.5.0,<9",
   "pytest>=9.1.1,<10",
   "pytest-cov>=7.1.0,<8",
   "transpiler-mate-runtime>=1.0.1,<2",
